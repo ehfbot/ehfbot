@@ -5,6 +5,7 @@ chardet==3.0.4
 discord.py==1.5.1
 idna==2.8
 multidict==4.7.2
+python-dotenv==0.17.0
 pytz==2019.3
 PyYAML==5.2
 websockets==6.0

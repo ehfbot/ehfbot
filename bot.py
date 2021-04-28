@@ -11,6 +11,7 @@ import pytz
 import discord
 import yaml
 from discord.ext import commands
+from dotenv import dotenv_values
 
 os.environ.setdefault('BOT_ENV', 'development')
 
@@ -29,8 +30,18 @@ class Config(UserDict):
             print('IOError')
             data = {}
 
-        if Config.env() in data:
-            data.update(data[Config.env()])
+        env = dotenv_values(".env")
+        data.update({
+            'discord': {
+                'client_id': env['DISCORD_CLIENT_ID'],
+                'token': env['DISCORD_TOKEN'],
+            },
+            'reddit': {
+                'client_id': env['REDDIT_BOT_CLIENT_ID'],
+                'secret': env['REDDIT_BOT_SECRET'],
+            }
+        })
+
         self.data = data
 
 def lookup_role(roles: List[discord.Role], name: str) -> [discord.Role, None]:
