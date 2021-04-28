@@ -13,25 +13,25 @@ import yaml
 from discord.ext import commands
 from dotenv import dotenv_values
 
-os.environ.setdefault('BOT_ENV', 'development')
-
 class Config(UserDict):
-    @classmethod
-    def env(cls) -> str:
-      return os.environ['BOT_ENV']
-
     def __init__(self, path: str):
         self.path = path
+        self.data = self.load_config(path)
+        self.data.update(self.load_env())
+
+    def load_config(self, path: str):
         data = {}
         try:
-            with open(self.path, 'r') as f:
+            with open(path, 'r') as f:
                 data = yaml.full_load(f)
         except IOError:
             print('IOError')
-            data = {}
 
+        return data
+
+    def load_env(self):
         env = dotenv_values(".env")
-        data.update({
+        return ({
             'discord': {
                 'client_id': env['DISCORD_CLIENT_ID'],
                 'token': env['DISCORD_TOKEN'],
@@ -41,8 +41,6 @@ class Config(UserDict):
                 'secret': env['REDDIT_BOT_SECRET'],
             }
         })
-
-        self.data = data
 
 def lookup_role(roles: List[discord.Role], name: str) -> [discord.Role, None]:
     return next((role for role in roles if role.name.lower() == name.lower()), None)
