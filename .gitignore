@@ -2,3 +2,5 @@
 venv
 tmp
 bin
+assets
+config
