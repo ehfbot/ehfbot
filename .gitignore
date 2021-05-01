@@ -4,3 +4,4 @@ tmp
 bin
 assets
 config
+*.pyc
