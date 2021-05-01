@@ -64,7 +64,6 @@ class Config(UserDict):
         return data
 
     def load_env(self, env):
-        print(env)
         return ({
             'discord': {
                 'token': env['DISCORD_TOKEN'],
