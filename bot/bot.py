@@ -9,7 +9,7 @@ from contextlib import contextmanager
 import boto3
 import discord
 import yaml
-from discord.ext import commands
+from discord.ext import commands, tasks
 from dotenv import dotenv_values
 
 from bot import cogs, helper
@@ -100,8 +100,7 @@ class Bot(commands.Bot):
         self.add_cog(cogs.AnnoyingCog(self))
         self.add_cog(cogs.NoveltyCog(self))
 
-        self.new_members = {}
-        self.heartbeat_task = self.loop.create_task(self.heartbeat_loop())
+        self.heartbeat_loop.start()
 
     def run(self) -> None:
         super().run(self.config['discord']['token'])
@@ -125,8 +124,14 @@ class Bot(commands.Bot):
         return True
 
     # discord.py doesn't have on_heartbeat like discordrb
+    @tasks.loop(seconds=10.0)
     async def heartbeat_loop(self) -> None:
-        await self.wait_until_ready()
-        while not self.is_closed():
+        if not self.is_closed():
             self.dispatch('heartbeat')
-            await asyncio.sleep(10)
+
+    @heartbeat_loop.before_loop
+    async def before_heartbeat_loop(self):
+        print("waiting for bot to be ready")
+        await self.wait_until_ready()
+        print("bot is ready")
+
