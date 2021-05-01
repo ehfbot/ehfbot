@@ -1,36 +1,68 @@
 import asyncio
 import inspect
+import itertools
 import os
 import random
 import re
-import itertools
+import sys
+import tempfile
 from collections import UserDict
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 from typing import Callable, List
-import pytz
+
+import boto3
 import discord
+import pytz
 import yaml
 from discord.ext import commands
 from dotenv import dotenv_values
 
+class Env(UserDict):
+    REQUIRED_KEYS = ('S3_REGION', 'S3_BUCKET', 'AWS_KEY', 'AWS_SECRET')
+
+    def __init__(self):
+        self.data = dotenv_values(".env")
+        self.warn_about_missing_keys()
+
+    def warn_about_missing_keys(self):
+        if set(self.REQUIRED_KEYS) - set(self.data) :
+            sys.exit(f"{self.REQUIRED_KEYS} must be set in .env")
+
+class Storage(object):
+    def __init__(self, env):
+        self.session = boto3.resource(
+            service_name='s3',
+            region_name=env['S3_REGION'],
+            aws_access_key_id=env['AWS_KEY'],
+            aws_secret_access_key=env['AWS_SECRET']
+        )
+        self.bucket = self.session.Bucket(env['S3_BUCKET'])
+
+    @contextmanager
+    def get(self, path):
+        filename, file_extension = os.path.splitext(path)
+        temporary_file = tempfile.NamedTemporaryFile(suffix=file_extension)
+        self.bucket.download_file(path, temporary_file.name)
+        with open(temporary_file.name, 'rb') as file:
+            try:
+                yield file
+            finally:
+                temporary_file.close()
+
+
 class Config(UserDict):
-    def __init__(self, path: str):
-        self.path = path
-        self.data = self.load_config(path)
-        self.data.update(self.load_env())
+    def __init__(self, env, storage):
+        self.data = self.load_config(storage)
+        self.data.update(self.load_env(env))
 
-    def load_config(self, path: str):
+    def load_config(self, storage):
         data = {}
-        try:
-            with open(path, 'r') as f:
-                data = yaml.full_load(f)
-        except IOError:
-            print('IOError')
-
+        with storage.get('config/app.yml') as file:
+            data = yaml.load(file.read(), Loader=yaml.FullLoader)
         return data
 
-    def load_env(self):
-        env = dotenv_values(".env")
+    def load_env(self, env):
         return ({
             'discord': {
                 'client_id': env['DISCORD_CLIENT_ID'],
@@ -60,10 +92,21 @@ def distinct(user: discord.User) -> str:
     return f"{user.name}#{user.discriminator}"
 
 class EhfBot(commands.Bot):
-    def __init__(self, config):
+    @classmethod
+    def create(cls):
+        env = Env()
+        storage = Storage(env)
+        config = Config(env=env, storage=storage)
+        self = EhfBot(env=env, storage=storage, config=config)
+        return self
+
+    def __init__(self, env, storage, config):
+        self.env = env
+        self.storage = storage
         self.config = config
         intents = discord.Intents.default()
         intents.members = True
+
         print(f"setting prefix to {self.config['commands']['prefix']}")
         super().__init__(command_prefix=self.config['commands']['prefix'], intents=intents)
 
@@ -386,7 +429,7 @@ class EhfBot(commands.Bot):
                 count = 0
                 try:
                     async for message in channel.history(limit=100000, after=window):
-                        count+=1
+                        count += 1
                         users.setdefault(message.author.id, {'messages': 0, 'adjusted': 0, 'words': 0, 'days': {}})
                         users[message.author.id]['messages'] += 1
                         users[message.author.id]['words'] += len(re.split("\s+", message.content))
@@ -429,10 +472,10 @@ class EhfBot(commands.Bot):
                         await message.add_reaction('🇮')
                         await message.add_reaction('🇲')
                         await message.add_reaction('🇪')
-                    elif rand == 2:
-                        message.channel.send(file=discord.File("./assets/images/anime.png"))
-                    elif rand == 3:
-                        message.channel.send(file=discord.File("./assets/images/yohjiman.png"))
+                    elif rand == 2 or rand == 3:
+                        path = random.choice(["assets/anime.png", "assets/yohjiman.png"])
+                        with ctx.bot.storage.get(path) as file:
+                            await ctx.send(file=discord.File(file))
 
     class AnnoyingCog(commands.Cog):
         def __init__(self, bot: commands.Bot):
@@ -471,8 +514,8 @@ class EhfBot(commands.Bot):
         @staticmethod
         def image_command(image: str) -> Callable:
             async def fn(ctx: commands.Context) -> None:
-                file = discord.File(f"./assets/images/{image}")
-                await ctx.send(file=file)
+                with ctx.bot.storage.get(f"assets/{image}") as file:
+                    await ctx.send(file=discord.File(file))
             return fn
 
         @classmethod
@@ -490,8 +533,9 @@ class EhfBot(commands.Bot):
         @commands.command(hidden=True)
         async def buttmuscle(self, ctx: commands.Context) -> None:
             print('buttmuscle')
-            filename = "./assets/images/buttmusclespicy.jpg" if ctx.channel.name == 'afterdark' else "./assets/images/buttmuscle.jpg"
-            await ctx.send(file=discord.File(filename))
+            path = "assets/buttmusclespicy.jpg" if ctx.channel.name == 'afterdark' else "assets/buttmuscle.jpg"
+            with ctx.bot.storage.get(path) as file:
+                await ctx.send(file=discord.File(file))
             await ctx.send(content='http://buttmuscle.eu/')
 
         @commands.command(hidden=True)
@@ -499,12 +543,13 @@ class EhfBot(commands.Bot):
             print('katon')
             user_distinct = distinct(ctx.author)
             if user_distinct == 'Katon#6969':
-                filename = "./assets/images/katonkaton.png"
+                path = "assets/katonkaton.png"
             elif user_distinct == 'brissings#4367':
-                filename = "./assets/images/katonbrissings.png"
+                path = "assets/katonbrissings.png"
             else:
-                filename = "./assets/images/katon.png"
-            await ctx.send(file=discord.File(filename))
+                path = "assets/katon.png"
+            with ctx.bot.storage.get(path) as file:
+                await ctx.send(file=discord.File(file))
 
         @commands.command(hidden=True)
         async def fakegeekgirls(self, ctx: commands.Context) -> None:
@@ -630,5 +675,9 @@ class RolesList(UserDict):
         data = map(lambda role: role.lower(), data)
         self.data = list(data)
 
+def main():
+    bot = EhfBot.create()
+    bot.run()
+
 if __name__ == '__main__':
-    EhfBot(Config(r'config/app.yml')).run()
+    main()
