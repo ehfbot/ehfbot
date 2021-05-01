@@ -16,15 +16,20 @@ from bot import cogs, helper
 
 
 class Env(UserDict):
-    REQUIRED_KEYS = ('S3_REGION', 'S3_BUCKET', 'AWS_KEY', 'AWS_SECRET')
+    REQUIRED_KEYS = ('DISCORD_CLIENT_ID', 'S3_REGION', 'S3_BUCKET', 'AWS_KEY', 'AWS_SECRET')
 
     def __init__(self):
-        self.data = dotenv_values(".env")
+        self.data = dotenv_values(".env") # only used in development
+        for key in self.REQUIRED_KEYS:
+            value = os.getenv(key) # used in heroku/production
+            if value:
+                self.data[key] = value
+
         self.warn_about_missing_keys()
 
     def warn_about_missing_keys(self):
         if set(self.REQUIRED_KEYS) - set(self.data) :
-            sys.exit(f"{self.REQUIRED_KEYS} must be set in .env")
+            sys.exit(f"{self.REQUIRED_KEYS} must be set in environment")
 
 class Storage(object):
     def __init__(self, env):
