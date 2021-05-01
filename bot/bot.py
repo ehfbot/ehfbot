@@ -16,7 +16,7 @@ from bot import cogs, helper
 
 
 class Env(UserDict):
-    REQUIRED_KEYS = ('DISCORD_CLIENT_ID', 'S3_REGION', 'S3_BUCKET', 'AWS_KEY', 'AWS_SECRET')
+    REQUIRED_KEYS = ('DISCORD_TOKEN', 'S3_REGION', 'S3_BUCKET', 'AWS_KEY', 'AWS_SECRET')
 
     def __init__(self):
         self.data = dotenv_values(".env") # only used in development
@@ -28,7 +28,7 @@ class Env(UserDict):
         self.warn_about_missing_keys()
 
     def warn_about_missing_keys(self):
-        if set(self.REQUIRED_KEYS) - set(self.data) :
+        if set(self.REQUIRED_KEYS) - set(self.data):
             sys.exit(f"{self.REQUIRED_KEYS} must be set in environment")
 
 class Storage(object):
@@ -64,15 +64,11 @@ class Config(UserDict):
         return data
 
     def load_env(self, env):
+        print(env)
         return ({
             'discord': {
-                'client_id': env['DISCORD_CLIENT_ID'],
                 'token': env['DISCORD_TOKEN'],
             },
-            'reddit': {
-                'client_id': env['REDDIT_BOT_CLIENT_ID'],
-                'secret': env['REDDIT_BOT_SECRET'],
-            }
         })
 
 class Bot(commands.Bot):
