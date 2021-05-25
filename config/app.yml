@@ -7,6 +7,7 @@ channels:
   anime: anime
   realtalk: realtalk
   afterdark: afterdark
+
 time:
   zone: America/Los_Angeles
   # how long should realtalk messages last (in hours)
@@ -15,11 +16,13 @@ time:
   afterdark-start: 22
   # when should afterdark end (local time hour)
   afterdark-end: 3
+
 activity:
   # how far back to consider activity (in days)
   window: 90
   messages: 100
   days: 10
+
 commands:
   prefix: '!'
   # prune-channels:
@@ -45,6 +48,7 @@ commands:
     podcast: http://wugandtras.bandcamp.com/
     sub: https://reddit.com/r/expensivehumanfashion/
     hmb: https://youtu.be/t0cXm_OYCHg
+
   images:
     8ball: 8ball.jpg
     abc: abc.png
@@ -69,6 +73,7 @@ commands:
     pepewrists: pepewrists.png
     christmasdoge: christmasdoge.jpg
     ohyeah: ohyeah.png
+
 roles:
   fashion:
     - bags
@@ -215,6 +220,7 @@ roles:
     - soccer
     - synth
     - voice
+
 feeds:
   ehf:
     name: /r/expensivehumanfashion/
