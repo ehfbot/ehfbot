@@ -1,0 +1,226 @@
+---
+channels:
+  welcome: general-mainline
+  meta: meta
+  mod: ehf-moderators
+  bot: bot
+  anime: anime
+  realtalk: realtalk
+  afterdark: afterdark
+time:
+  zone: America/Los_Angeles
+  # how long should realtalk messages last (in hours)
+  realtalk-expiry: 10
+  # when should afterdark start (local time hour)
+  afterdark-start: 22
+  # when should afterdark end (local time hour)
+  afterdark-end: 3
+activity:
+  # how far back to consider activity (in days)
+  window: 90
+  messages: 100
+  days: 10
+commands:
+  prefix: '!'
+  # prune-channels:
+  #   - the-void
+  waiting-pm: |
+    Welcome to EHF! Please follow the instructions below to get approved:
+
+    1. Take a screenshot of your Reddit username while on the EHF subreddit
+    2. Post it in the #sitting-in-the-waiting-room channel and mention @mod so they can get you approved
+
+  welcome-pm: |
+    Welcome to EHF! Please familiarize yourself with the rules in the #sticky channel and say hi to everyone in #general-mainline.
+
+    Please select a Discord nickname that people will easily recognize you by. Nicknames should meet a base level of maturity. You'll be asked to change your nickname if it does not comply.
+
+    We also suggest uploading a profile photo for an easy visual cue. It doesn't have to be your actual picture, just something besides the default icon.
+
+    EHF Discord has a number of roles based on designers, video games, and locations with their own meetup channels. To add yourself to a role, post in #meta using the format `!addroles role1, role2` (with no @)
+
+    Thanks and welcome to the community!
+
+  links:
+    podcast: http://wugandtras.bandcamp.com/
+    sub: https://reddit.com/r/expensivehumanfashion/
+    hmb: https://youtu.be/t0cXm_OYCHg
+  images:
+    8ball: 8ball.jpg
+    abc: abc.png
+    anime: animegetout.jpg
+    # buttmuscle: buttmuscle.png
+    bye: bye.png
+    grr: grr.png
+    hams: hams.png
+    hi: hi.png
+    liberal: liberal.jpg
+    ohyou: ohyou.jpg
+    owo: owo.png
+    yuh: yuh.png
+    doge: doge-poggers.png
+    gulag: gulag.jpg
+    mascot: mascot.png
+    mywife: mywife.jpg
+    myhusband: myhusband.png
+    indica: indica.jpg
+    horny: horny.png
+    psyop: psyop.jpg
+    pepewrists: pepewrists.png
+    christmasdoge: christmasdoge.jpg
+    ohyeah: ohyeah.png
+roles:
+  fashion:
+    - bags
+    - fashionstudent
+    - fitbattle
+    - furniture
+    - runway
+    - shiny
+    - sneakers
+    - watches
+
+  aesthetics:
+    - bondage
+    - darkwear
+    - peasant
+    - pirate
+    - streetwear
+    - tabi
+    - techwear
+    - widepants
+    - witches
+    - workwear
+    - yeehaw
+
+  brands:
+    - '69'
+    - acne
+    - acronym
+    - ami
+    - annd
+    - balenciaga
+    - bbs
+    - bedjwford
+    - blackmeans
+    - cabourn
+    - carpe
+    - cavempt
+    - ccp
+    - cdg
+    - celine
+    - chloe
+    - craig
+    - crocs
+    - devoa
+    - dior
+    - dries
+    - eg
+    - elenadawson
+    - evankinori
+    - gbs
+    - guidi
+    - haider
+    - hender
+    - hoka
+    - issey
+    - julius
+    - jwa
+    - kapital
+    - kiko
+    - krisvanassche
+    - ladmusician
+    - lv
+    - marclebihan
+    - martinerose
+    - margiela
+    - marineserre
+    - mcqueen
+    - nemeth
+    - nomdeguerre
+    - offwhite
+    - ourlegacy
+    - paulharnden
+    - peterdo
+    - raf
+    - rick
+    - sftm
+    - slp
+    - story
+    - soloist
+    - supreme
+    - thombrowne
+    - umawang
+    - undercover
+    - uniqlo
+    - veilance
+    - vetements
+    - visvim
+    - walter
+    - westwood
+    - willhelm
+    - yproject
+    - yohji
+    - zam
+
+  food:
+    - brew
+    - coffee
+    - spicy
+
+  gaming:
+    - animalcrossing
+    - csgo
+    - dnd
+    - jackbox
+    - league
+    - minecraft
+    - overwatch
+    - pubg
+    - smash
+
+  pronoun:
+    - he/him
+    - she/her
+    - they/them
+
+  region:
+    - cali
+    - norcal
+    - socal
+    - canada
+    - dc
+    - euro
+    - japan
+    - melbourne
+    - new-england
+    - nordic
+    - nyc
+    - philly
+    - pnw
+    - south
+    - texas
+    - toronto
+    - uk
+
+  topic:
+    - bald
+    - cartalk
+    - guitar
+    - keyboards
+    - movies
+    - mullet
+    - pens
+    - skate
+    - soccer
+    - synth
+    - voice
+feeds:
+  ehf:
+    name: /r/expensivehumanfashion/
+    url: https://www.reddit.com/r/expensivehumanfashion/new/.rss?feed=8e28e3ab46e3c754d1db8ef12c0d70897a521568&user=EHF-BOT
+    repost_count: 0
+    repost_interval: 14400
+    posts:
+      "*":
+        - "meta"
