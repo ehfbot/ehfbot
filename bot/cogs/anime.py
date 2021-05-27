@@ -23,6 +23,6 @@ class AnimeCog(commands.Cog):
                     await message.add_reaction('🇲')
                     await message.add_reaction('🇪')
                 elif rand == 2 or rand == 3:
-                    path = random.choice(["assets/anime.png", "assets/yohjiman.png"])
-                    with ctx.bot.storage.get(path) as file:
-                        await ctx.send(file=discord.File(file))
+                    path = random.choice(["assets/anime.png", "assets/yohjiman.jpg"])
+                    with self.bot.storage.get(path) as file:
+                        await message.channel.send(file=discord.File(file))
