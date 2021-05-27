@@ -74,6 +74,11 @@ commands:
     christmasdoge: christmasdoge.jpg
     ohyeah: ohyeah.png
 
+pings:
+  links:
+  images:
+    '420': indica.jpg
+
 roles:
   fashion:
     - bags

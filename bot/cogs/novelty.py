@@ -8,8 +8,9 @@ from .. import helper
 
 class NoveltyCog(commands.Cog):
     def __new__(cls, bot=commands.Bot, *args, **kwargs):
-        cls.create_link_commands(bot.config['commands']['links'])
-        cls.create_image_commands(bot.config['commands']['images'])
+        cls.create_link_commands(bot.config.get('commands', {}).get('links', {}))
+        cls.create_image_commands(bot.config.get('commands', {}).get('images', {}))
+
         return super().__new__(cls, *args, **kwargs)
 
     def __init__(self, bot: commands.Bot):
@@ -40,16 +41,22 @@ class NoveltyCog(commands.Cog):
         return fn
 
     @classmethod
-    def create_link_commands(cls, links: list) -> None:
-        if not len(links): return
+    def create_link_commands(cls, links: dict) -> None:
         for cmd, link in links.items():
             cls.add_command_fn(cmd, cls.link_command(link))
 
     @classmethod
-    def create_image_commands(cls, images: list) -> None:
-        if not len(images): return
+    def create_image_commands(cls, images: dict) -> None:
         for cmd, image in images.items():
             cls.add_command_fn(cmd, cls.image_command(image))
+
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message) -> None:
+        roles_pinged = list(map(lambda role: role.name, message.role_mentions))
+        for role, image in self.bot.config.get('pings', {}).get('images', {}).items():
+            if role in roles_pinged:
+                with self.bot.storage.get(f"assets/{image}") as file:
+                    await message.channel.send(file=discord.File(file))
 
     @commands.command(hidden=True)
     async def buttmuscle(self, ctx: commands.Context) -> None:
