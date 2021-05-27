@@ -53,13 +53,13 @@ class Storage(object):
                 temporary_file.close()
 
 class Config(UserDict):
-    def __init__(self, env, storage):
-        self.data = self.load_config(storage)
+    def __init__(self, env):
+        self.data = self.load_config()
         self.data.update(self.load_env(env))
 
-    def load_config(self, storage):
+    def load_config(self):
         data = {}
-        with storage.get('config/app.yml') as file:
+        with open('config/app.yml', 'r') as file:
             data = yaml.load(file.read(), Loader=yaml.FullLoader)
         return data
 
@@ -74,8 +74,8 @@ class Bot(commands.Bot):
     @classmethod
     def create(cls):
         env = Env()
-        storage = Storage(env)
-        config = Config(env=env, storage=storage)
+        storage = Storage(env=env)
+        config = Config(env=env)
         self = Bot(env=env, storage=storage, config=config)
         return self
 
