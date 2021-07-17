@@ -82,6 +82,7 @@ pings:
 roles:
   fashion:
     - bags
+    - denim
     - fashionstudent
     - fitbattle
     - furniture
