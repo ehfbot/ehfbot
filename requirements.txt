@@ -22,8 +22,5 @@ six==1.15.0
 stevedore==3.3.0
 typing-extensions==3.7.4.3
 urllib3==1.26.4
-virtualenv==20.4.4
-virtualenv-clone==0.5.4
-virtualenvwrapper==4.8.4
 websockets==6.0
 yarl==1.4.2
