@@ -28,8 +28,11 @@ class RealtalkCog(commands.Cog):
             channels.append(parent)
 
             threads = helper.lookup_threads(channels=guild.channels, parent=parent)
+            if threads is None:
+                print(f"found zero #realtalk threads")
+                continue
+
             print(f"found #{len(threads)} #realtalk threads")
-            if threads is None: continue
 
             for channel in threads:
                 channels.append(channel)
