@@ -15,18 +15,30 @@ class RealtalkCog(commands.Cog):
         await self.process_realtalk()
 
     async def process_realtalk(self) -> None:
+        for channel in await self.find_channels():
+            await self.purge_messages(channel)
+
+    async def find_channels(self) -> list:
+        channels = []
+
         for guild in self.bot.guilds:
-            channel = helper.lookup_channel(guild.channels, self.bot.config['channels']['realtalk'])
-            if channel is None: continue
+            parent = helper.lookup_channel(channels=guild.channels, name=self.bot.config['channels']['realtalk'])
+            if parent is None: continue
 
-            # must use utcnow as further down discord does a subtraction assuming a tz naive utc time
-            before = datetime.utcnow() - timedelta(hours = self.bot.config['time']['realtalk-expiry'])
-            #print(f"pruning #realtalk messages before {before} {channel}")
-            try:
-                result = await channel.purge(limit=10000, before=before, bulk=False)
-                #print(f"done pruning #realtalk {result}")
-            except discord.errors.NotFound:
-                pass
+            channels.append(parent)
 
-            # history = await channel.history(before=before).flatten()
-            # print(f"history {len(history)}")
+            threads = helper.lookup_threads(channels=guild.channels, parent=parent)
+            if threads is None: continue
+
+            for channel in threads:
+                channels.append(channel)
+
+        return channels
+
+    async def purge_messages(self, channel) -> None:
+        # must use utcnow as further down discord does a subtraction assuming a tz naive utc time
+        before = datetime.utcnow() - timedelta(hours=self.bot.config['time']['realtalk-expiry'])
+        try:
+            await channel.purge(limit=10000, before=before, bulk=False)
+        except discord.errors.NotFound:
+            pass
