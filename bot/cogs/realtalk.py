@@ -30,6 +30,12 @@ class RealtalkCog(commands.Cog):
             threads = helper.lookup_threads(channels=guild.channels, parent=parent)
             if threads is None:
                 print(f"found zero #realtalk threads")
+                print(f"realtalk channel id #{parent.id}")
+                all_threads = list(map(lambda channel: channel, guild.channels))
+                print(f"found #{len(all_threads)} total threads")
+                if all_threads is not None and len(all_threads) > 0:
+                    print(f"first thread parent_id #{all_threads[0].parent_id}")
+
                 continue
 
             print(f"found #{len(threads)} #realtalk threads")
