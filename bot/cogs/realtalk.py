@@ -32,6 +32,7 @@ class RealtalkCog(commands.Cog):
                 print(f"found zero #realtalk threads")
                 print(f"realtalk channel id #{parent.id}")
                 all_threads = list(map(lambda channel: channel, guild.channels))
+                all_threads = list(filter(lambda channel: hasattr(channel, 'parent_id'), roles))
                 print(f"found #{len(all_threads)} total threads")
                 if all_threads is not None and len(all_threads) > 0:
                     print(f"first thread parent_id #{all_threads[0].parent_id}")
