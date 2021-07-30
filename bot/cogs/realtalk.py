@@ -27,18 +27,8 @@ class RealtalkCog(commands.Cog):
 
             channels.append(parent)
 
-            threads = helper.lookup_threads(channels=guild.channels, parent=parent)
-            if threads is None:
-                print(f"found zero #realtalk threads")
-                print(f"realtalk channel id #{parent.id}")
-                all_threads = list(filter(lambda channel: hasattr(channel, 'parent_id'), guild.channels))
-                print(f"found #{len(all_threads)} total threads")
-                if all_threads is not None and len(all_threads) > 0:
-                    print(f"first thread parent_id #{all_threads[0].parent_id}")
-
-                continue
-
-            print(f"found #{len(threads)} #realtalk threads")
+            threads = parent.threads
+            if threads is None: continue
 
             for channel in threads:
                 channels.append(channel)
@@ -51,5 +41,5 @@ class RealtalkCog(commands.Cog):
         print(f"pruning #realtalk messages before {before} {channel.name}")
         try:
             await channel.purge(limit=10000, before=before, bulk=False)
-        except discord.errors.NotFound:
+        except (discord.errors.NotFound, discord.errors.Forbidden):
             pass
