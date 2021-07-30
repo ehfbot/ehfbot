@@ -16,10 +16,6 @@ def lookup_roles(roles: List[discord.Role], names: List[str]) -> List[discord.Ro
 def lookup_channel(channels: List[discord.abc.GuildChannel], name: str) -> Union[discord.abc.GuildChannel, None]:
     return next((channel for channel in channels if channel.name.lower() == name.lower()), None)
 
-def lookup_threads(channels: List[discord.abc.GuildChannel], parent: discord.abc.GuildChannel) -> Union[discord.abc.GuildChannel, None]:
-    thread_types = ('GUILD_PRIVATE_THREAD', 'GUILD_PUBLIC_THREAD', 'GUILD_NEWS_THREAD')
-    return next((channel for channel in channels if channel.type in thread_types and channel.parent_id == parent.id), None)
-
 def lookup_member(members: List[discord.Member], name: str) -> Union[discord.Member, None]:
     lname = name.lower()
     return next((member for member in members if member.name.lower() == lname or member.display_name.lower() == lname), None)
