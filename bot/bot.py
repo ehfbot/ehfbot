@@ -124,7 +124,7 @@ class Bot(commands.Bot):
         return True
 
     # discord.py doesn't have on_heartbeat like discordrb
-    @tasks.loop(seconds=10.0)
+    @tasks.loop(seconds=60.0)
     async def heartbeat_loop(self) -> None:
         if not self.is_closed():
             self.dispatch('heartbeat')
