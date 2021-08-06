@@ -38,7 +38,7 @@ class RealtalkCog(commands.Cog):
     async def purge_messages(self, channel) -> None:
         # must use utcnow as further down discord does a subtraction assuming a tz naive utc time
         before = datetime.utcnow() - timedelta(hours=self.bot.config['time']['realtalk-expiry'])
-        print(f"pruning #realtalk messages before {before} {channel.name}")
+        # print(f"pruning #realtalk messages before {before} {channel.name}")
         try:
             await channel.purge(limit=10000, before=before, bulk=False)
         except (discord.errors.NotFound, discord.errors.Forbidden):
