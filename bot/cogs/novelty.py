@@ -1,3 +1,4 @@
+import re
 from typing import Callable, List
 
 import discord
@@ -52,6 +53,15 @@ class NoveltyCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
+        await self.reaction_phrases(message)
+        await self.ping_images(message)
+
+    async def reaction_phrases(self, message: discord.Message) -> None:
+        if re.match(r'^(ad,?ao|anoth(a|er) ?day ?,? ?anoth(a|er) ?opp).*$', message.content.lower()):
+            await message.add_reaction('💯')
+            return
+
+    async def ping_images(self, message: discord.Message) -> None:
         roles_pinged = list(map(lambda role: role.name, message.role_mentions))
         for role, image in self.bot.config.get('pings', {}).get('images', {}).items():
             if role in roles_pinged:
