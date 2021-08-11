@@ -47,7 +47,7 @@ class RolerCog(commands.Cog):
             return
 
         embed = discord.Embed(title=helper.distinct(member)) \
-            .set_image(url=member.avatar_url) \
+            .set_image(url=member.avatar.url) \
             .add_field(name='registered', value=member.created_at.strftime('%Y-%m-%d')) \
             .add_field(name='joined', value=member.joined_at.strftime('%Y-%m-%d')) \
             .add_field(name='roles', inline=False, value=' '.join(map(lambda role: role.name, member.roles)))
