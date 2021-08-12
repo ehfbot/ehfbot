@@ -182,13 +182,10 @@ roles:
 
   gaming:
     - animalcrossing
-    - csgo
     - dnd
     - jackbox
     - league
     - minecraft
-    - overwatch
-    - pubg
     - smash
 
   pronoun:
@@ -228,6 +225,7 @@ roles:
     - skate
     - soccer
     - synth
+    - rave
     - voice
 
 feeds:
