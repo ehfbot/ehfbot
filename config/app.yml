@@ -182,13 +182,10 @@ roles:
 
   gaming:
     - animalcrossing
-    - csgo
     - dnd
     - jackbox
     - league
     - minecraft
-    - overwatch
-    - pubg
     - smash
 
   pronoun:
@@ -225,6 +222,7 @@ roles:
     - movies
     - mullet
     - pens
+    - rave
     - skate
     - soccer
     - synth
