@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import discord
 from discord.ext import commands
+from discord.utils import get
 
 from .. import helper
 
@@ -22,7 +23,7 @@ class RealtalkCog(commands.Cog):
         channels = []
 
         for guild in self.bot.guilds:
-            parent = helper.lookup_channel(channels=guild.channels, name=self.bot.config['channels']['realtalk'])
+            parent = get(guild.channels, name=self.bot.config['channels']['realtalk'])
             if parent is None: continue
 
             channels.append(parent)
@@ -40,6 +41,7 @@ class RealtalkCog(commands.Cog):
         before = datetime.utcnow() - timedelta(hours=self.bot.config['time']['realtalk-expiry'])
         # print(f"pruning #realtalk messages before {before} {channel.name}")
         try:
-            await channel.purge(limit=10000, before=before, bulk=False)
+            # Message.thread_starter_message is throwing a 403 when being bulk deleted
+            await channel.purge(limit=10000, before=before, bulk=True, check=lambda message: message.type != discord.MessageType.thread_starter_message)
         except (discord.errors.NotFound, discord.errors.Forbidden):
             pass
