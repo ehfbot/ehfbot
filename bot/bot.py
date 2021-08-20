@@ -21,7 +21,7 @@ from bot import cogs, helper
 logging.basicConfig(level=logging.DEBUG)
 
 class Env(UserDict):
-    REQUIRED_KEYS = ('DISCORD_TOKEN', 'S3_REGION', 'S3_BUCKET', 'AWS_KEY', 'AWS_SECRET')
+    REQUIRED_KEYS = ('DISCORD_TOKEN', 'S3_REGION', 'S3_BUCKET', 'AWS_KEY', 'AWS_SECRET', 'GUILD_IDS')
 
     def __init__(self):
         self.data = dotenv_values(".env") # only used in development
