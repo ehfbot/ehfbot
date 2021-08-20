@@ -102,6 +102,7 @@ class Bot(commands.Bot):
         override_guild_ids = env.get('GUILD_IDS')
         if override_guild_ids is not None:
             self.guild_ids = list(map(int, override_guild_ids.split(',')))
+            print(f"setting guild_ids to {self.guild_ids} for faster slash command registration")
 
         self.slash = SlashCommand(self, sync_commands=True, sync_on_cog_reload=True, override_type=True)
         self.add_slash_command(self.ping, name="ping")
