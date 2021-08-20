@@ -99,7 +99,7 @@ class Bot(commands.Bot):
         # "global" interactions without explicit guild_ids
         # take hours to register
         self.guild_ids = None
-        override_guild_ids = env.get('GUILD_IDS')
+        override_guild_ids = env['GUILD_IDS']
         if override_guild_ids is not None:
             self.guild_ids = list(map(int, override_guild_ids.split(',')))
             print(f"setting guild_ids to {self.guild_ids} for faster slash command registration")
