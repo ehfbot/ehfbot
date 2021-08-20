@@ -1,19 +1,24 @@
 import asyncio
+import logging
 import os
 import re
 import sys
 import tempfile
+import typing
 from collections import UserDict
 from contextlib import contextmanager
 
 import boto3
 import discord
+import discord_slash
 import yaml
 from discord.ext import commands, tasks
+from discord_slash import SlashCommand, SlashContext
 from dotenv import dotenv_values
 
 from bot import cogs, helper
 
+logging.basicConfig(level=logging.DEBUG)
 
 class Env(UserDict):
     REQUIRED_KEYS = ('DISCORD_TOKEN', 'S3_REGION', 'S3_BUCKET', 'AWS_KEY', 'AWS_SECRET')
@@ -76,8 +81,8 @@ class Bot(commands.Bot):
         env = Env()
         storage = Storage(env=env)
         config = Config(env=env)
-        self = Bot(env=env, storage=storage, config=config)
-        return self
+        bot = Bot(env=env, storage=storage, config=config)
+        return bot
 
     def __init__(self, env, storage, config):
         self.env = env
@@ -86,43 +91,80 @@ class Bot(commands.Bot):
         intents = discord.Intents.default()
         intents.members = True
 
+        # we are moving away from commands
+        # but still want to support the main ones for a while
         print(f"setting prefix to {self.config['commands']['prefix']}")
         super().__init__(command_prefix=self.config['commands']['prefix'], intents=intents)
 
-        self.add_cog(cogs.PresenceCog(self))
-        self.add_cog(cogs.WelcomeCog(self))
-        self.add_cog(cogs.RolerCog(self))
-        self.add_cog(cogs.AfterdarkCog(self))
-        self.add_cog(cogs.RealtalkCog(self))
-        self.add_cog(cogs.ActivityCog(self))
-        self.add_cog(cogs.LurkersCog(self))
-        self.add_cog(cogs.AnimeCog(self))
-        self.add_cog(cogs.NoveltyCog(self))
+        # "global" interactions without explicit guild_ids
+        # take hours to register
+        self.guild_ids = None
+        override_guild_ids = env.get('GUILD_IDS')
+        if override_guild_ids is not None:
+            self.guild_ids = list(map(int, override_guild_ids.split(',')))
+
+        self.slash = SlashCommand(self, sync_commands=True, sync_on_cog_reload=True, override_type=True)
+        self.add_slash_command(self.ping, name="ping")
+
+        initial_cogs = [
+            cogs.PresenceCog,
+            cogs.WelcomeCog,
+            cogs.RolerCog,
+            cogs.AfterdarkCog,
+            cogs.RealtalkCog,
+            cogs.ActivityCog,
+            cogs.LurkersCog,
+            cogs.AnimeCog,
+            cogs.NoveltyCog,
+        ]
+        for cog in initial_cogs:
+            self.add_cog(cog(self))
 
         self.heartbeat_loop.start()
 
     def run(self) -> None:
         super().run(self.config['discord']['token'])
 
-    def check_meta_channel(self, ctx: commands.Context) -> bool:
-        return ctx.channel.name == self.config['channels']['meta']
+    def add_slash_command(
+        self,
+        cmd: typing.Callable,
+        roles: typing.Optional[typing.Sequence] = None,
+        channels: typing.Optional[typing.Sequence] = None,
+        options: typing.Optional[typing.Sequence] = None,
+        **kwargs
+    ) -> None:
+        async def wrapper(ctx: SlashContext, cmd=cmd, **kwargs):
+            return await cmd(ctx, **kwargs)
 
-    async def warn_meta_channel(self, ctx: commands.Context) -> bool:
-        if not self.check_meta_channel(ctx):
-            await ctx.send(f"take it to #{self.config['channels']['meta']}")
-            return False
-        return True
+        def check_channels(channels: typing.Sequence):
+            def predicate(ctx: SlashContext):
+                print(f"channels: {channels}")
+                if channels is None: return True
+                for channel in channels:
+                    name = self.config['channels'].get(channel, channel)
+                    if ctx.channel.name == name:
+                        return True
+                return False
+            return commands.check(predicate)
 
-    def check_bot_channel(self, ctx: commands.Context) -> bool:
-        return ctx.channel.name == self.config['channels']['bot']
+        cmd = check_channels(channels)(wrapper)
 
-    async def warn_bot_channel(self, ctx: commands.Context) -> bool:
-        if not self.check_bot_channel(ctx):
-            await ctx.send(f"take it to #{self.config['channels']['bot']}")
-            return False
-        return True
+        if roles is not None:
+            cmd = commands.has_any_role(*roles)(cmd)
 
-    # discord.py doesn't have on_heartbeat like discordrb
+        # have to set a dummy list to prevent
+        # discord_slash from probing our cmd's args
+        if options is None:
+            options = []
+
+        return self.slash.add_slash_command(
+            cmd,
+            guild_ids=self.guild_ids,
+            options=options,
+            **kwargs
+        )
+
+    # on a regular interval we will dispatch a heartbeat to cogs
     @tasks.loop(seconds=10.0)
     async def heartbeat_loop(self) -> None:
         if not self.is_closed():
@@ -134,3 +176,20 @@ class Bot(commands.Bot):
         await self.wait_until_ready()
         print("bot is ready")
 
+    async def on_ready(self):
+        print("on_ready")
+
+    async def on_slash_command_error(self, ctx, ex):
+        print('on_slash_command_error')
+        if isinstance(ex, discord.ext.commands.errors.MissingAnyRole):
+            await ctx.send("Permission check failed", hidden=True)
+        elif isinstance(ex, discord_slash.error.CheckFailure):
+            await ctx.send("Channel check failed", hidden=True)
+        else:
+            await ctx.send('Oopsie woopsie', hidden=True)
+            print(ex)
+            # raise ex
+
+    async def ping(self, ctx: SlashContext) -> None:
+        print("ping")
+        await ctx.send(content='pong')
