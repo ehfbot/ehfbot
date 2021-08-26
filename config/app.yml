@@ -13,9 +13,9 @@ time:
   # how long should realtalk messages last (in hours)
   realtalk-expiry: 10
   # when should afterdark start (local time hour)
-  afterdark-start: 22
+  afterdark-start: 21
   # when should afterdark end (local time hour)
-  afterdark-end: 3
+  afterdark-end: 2
 
 activity:
   # how far back to consider activity (in days)
