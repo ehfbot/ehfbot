@@ -177,8 +177,10 @@ roles:
     - zam
 
   food:
+    - boba
     - brew
     - coffee
+    - egg
     - spicy
 
   gaming:
