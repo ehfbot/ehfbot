@@ -97,6 +97,7 @@ class Bot(commands.Bot):
         self.add_cog(cogs.ActivityCog(self))
         self.add_cog(cogs.LurkersCog(self))
         self.add_cog(cogs.AnimeCog(self))
+        self.add_cog(cogs.AnnoyingCog(self))
         self.add_cog(cogs.NoveltyCog(self))
 
         self.heartbeat_loop.start()
