@@ -12,4 +12,8 @@ class AnnoyingCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
-        if re.match(r'^[^\w]?(yo)?ur mom.*$', message.content.lower()): await message.delete()
+        message_content = message.content.lower()
+        if re.match(r'^[^\w]?(yo)?ur mom.*$', message_content): await message.delete()
+
+        wsw_words = ["phone", "sex", "horny", "whore", "fuck", "trash", "fucking", "ugly", "butterface", "attention", "sugar daddy", "sugar", "daddy", "thot", "pussy", "rape", "dick", "blow", "blowjob", "suck", "of", "onlyfans", "whatsapp"]
+        if any(word in message_content for word in wsw_words): await message.delete()
