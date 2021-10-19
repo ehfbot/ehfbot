@@ -13,9 +13,9 @@ time:
   # how long should realtalk messages last (in hours)
   realtalk-expiry: 10
   # when should afterdark start (local time hour)
-  afterdark-start: 22
+  afterdark-start: 21
   # when should afterdark end (local time hour)
-  afterdark-end: 3
+  afterdark-end: 2
 
 activity:
   # how far back to consider activity (in days)
@@ -133,7 +133,9 @@ roles:
     - gbs
     - guidi
     - haider
+    - helmut
     - hender
+    - hyeinseo
     - hoka
     - issey
     - julius
@@ -176,19 +178,18 @@ roles:
     - zam
 
   food:
+    - boba
     - brew
     - coffee
+    - egg
     - spicy
 
   gaming:
     - animalcrossing
-    - csgo
     - dnd
     - jackbox
     - league
     - minecraft
-    - overwatch
-    - pubg
     - smash
 
   pronoun:
@@ -225,6 +226,7 @@ roles:
     - movies
     - mullet
     - pens
+    - rave
     - skate
     - soccer
     - synth
