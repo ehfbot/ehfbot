@@ -18,7 +18,6 @@ from dotenv import dotenv_values
 
 from bot import cogs, helper
 
-logging.basicConfig(level=logging.DEBUG)
 
 class Env(UserDict):
     REQUIRED_KEYS = ('DISCORD_TOKEN', 'S3_REGION', 'S3_BUCKET', 'AWS_KEY', 'AWS_SECRET', 'GUILD_IDS')
