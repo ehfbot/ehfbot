@@ -117,13 +117,13 @@ class RolerCog(commands.Cog):
         await Roler(ctx).add_roles(roles)
 
     async def addrole(self, ctx: typing.Union[commands.Context, SlashContext], role: discord.abc.Role) -> None:
-        await self.addroles(ctx, [role.name])
+        await self.addroles(ctx, role.name)
 
     async def removeroles(self, ctx: typing.Union[commands.Context, SlashContext], *roles: str) -> None:
         await Roler(ctx).remove_roles(roles)
 
-    async def removerole(self, ctx: typing.Union[commands.Context, SlashContext], *roles: str) -> None:
-        await self.removeroles(ctx, *roles)
+    async def removerole(self, ctx: typing.Union[commands.Context, SlashContext], role: discord.abc.Role) -> None:
+        await self.removeroles(ctx, role.name)
 
 
 class Roler():
@@ -138,7 +138,7 @@ class Roler():
         for key, roles in config_roles.items():
             await self.ctx.send(f"{key}: {', '.join(roles)}")
 
-    async def add_roles(self, roles: list) -> None:
+    async def add_roles(self, roles: str) -> None:
         if not self.check_user_approved: return
         if not self.check_config_roles_defined: return
 
@@ -159,7 +159,7 @@ class Roler():
         if invalid:
             await self.ctx.send(f"not adding to {', '.join(invalid)}")
 
-    async def remove_roles(self, roles: list) -> None:
+    async def remove_roles(self, roles: str) -> None:
         if not self.check_user_approved: return
         if not self.check_config_roles_defined: return
 
@@ -202,7 +202,8 @@ class Roler():
         return ['mod', 'blackname', 'dad', 'fuzz', 'admin', 'bot', 'approved', 'losers', 'illuminatus', 'anime', 'weeb', 'weebs']
 
 class RolesList(UserDict):
-    def __init__(self, data):
+    def __init__(self, data: str) -> list:
+        data = data.split(' ')
         data = map(lambda role: role.split(','), data)
         data = itertools.chain.from_iterable(data)
         data = map(lambda role: re.sub(r'[\s,@]', '', role), data)
