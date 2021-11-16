@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 
 import discord
 from discord.ext import commands
+from discord.utils import get
+from discord_slash import SlashCommand, SlashContext
 
 from .. import helper
 
@@ -11,10 +13,15 @@ class ActivityCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(hidden=True)
-    async def activity(self, ctx: commands.Context) -> None:
-        if not await self.bot.warn_bot_channel(ctx): return
-        role = helper.lookup_role(ctx.guild.roles, 'active')
+        self.bot.add_slash_command(
+            self.activity,
+            name="activity",
+            roles=['mod', 'admin'],
+            channels=['bot'],
+        )
+
+    async def activity(self, ctx: SlashContext) -> None:
+        role = get(ctx.guild.roles, name='active')
         if not role:
             await ctx.send("no active role")
             return
@@ -26,7 +33,7 @@ class ActivityCog(commands.Cog):
             member = ctx.guild.get_member(id)
             if not member: continue
             await ctx.send(f"{member.display_name}: {count['adjusted']} / {count['messages']} messages with {count['words']} words over {len(count['days'])} days")
-            is_active = helper.lookup_role(member.roles, 'active') is not None
+            is_active = get(member.roles, name='active') is not None
 
             if count['adjusted'] >= self.bot.config['activity']['messages'] and len(count['days']) >= self.bot.config['activity']['days']:
                 if is_active:
@@ -46,13 +53,7 @@ class ActivityCog(commands.Cog):
         lurkers = list(filter(lambda member: member.id not in counted_ids, ctx.guild.members))
         await ctx.send(f"found {len(lurkers)} lurkers")
         for member in lurkers:
-            #is_active = helper.lookup_role(member.roles, 'active') is not None
             await ctx.send(f"{member.display_name}: lurker")
-            #if not is_active:
-                #await ctx.send("not in active")
-                #continue
-            #await ctx.send("removing from active")
-            #await member.remove_roles(role)
             try:
                 await member.edit(roles=[])
             except discord.errors.Forbidden:

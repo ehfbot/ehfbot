@@ -1,9 +1,14 @@
 import itertools
 import re
+import typing
 from collections import UserDict
 
 import discord
 from discord.ext import commands
+from discord.utils import get
+from discord_slash import SlashContext, cog_ext
+from discord_slash.model import SlashCommandOptionType
+from discord_slash.utils.manage_commands import create_option
 
 from .. import helper
 
@@ -12,38 +17,89 @@ class RolerCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command()
-    async def whomst(self, ctx: commands.Context, *name) -> None:
+        self.bot.add_slash_command(
+            self.whomst,
+            name="whomst",
+            channels=['meta'],
+            options=[
+                create_option(
+                    name="mentionable",
+                    description="member or role",
+                    option_type=SlashCommandOptionType.MENTIONABLE,
+                    required=True,
+                ),
+            ]
+        )
+
+        self.bot.add_slash_command(
+            self.roles,
+            name="roles",
+        )
+
+        self.bot.add_slash_command(
+            self.addroles,
+            name="addroles",
+            channels=['meta'],
+            options=[
+                create_option(
+                    name="roles",
+                    description="roles list",
+                    option_type=SlashCommandOptionType.STRING,
+                    required=False,
+                ),
+            ]
+        )
+        self.bot.add_slash_command(
+            self.addrole,
+            name="addrole",
+            channels=['meta'],
+            options=[
+                create_option(
+                    name="role",
+                    description="role name",
+                    option_type=SlashCommandOptionType.ROLE,
+                    required=True,
+                ),
+            ]
+        )
+
+    async def whomst(self, ctx: typing.Union[commands.Context, SlashContext], mentionable: typing.Optional[str] = None) -> None:
         print('whomst')
-        name = ' '.join(name)
-        if not await self.bot.warn_meta_channel(ctx): return
-        if not name:
+        if not mentionable:
             await ctx.send("whomst is whomst?")
             return
 
-        role = helper.lookup_role(ctx.guild.roles, name)
+        role = get(ctx.guild.roles, id=int(mentionable))
         if role:
-            await ctx.invoke(self.bot.get_command('whoisin'), name)
+            await self.whoisin(ctx, role=role)
 
-        user = helper.lookup_member(ctx.guild.members, name)
-        if user:
-            await ctx.invoke(self.bot.get_command('whois'), name)
+        member = get(ctx.guild.members, id=int(mentionable))
+        if member:
+            await self.whois(ctx, member=member)
 
-        if not role and not user:
+        if not role and not member:
             await ctx.send('nobody')
 
-    @commands.command(hidden=True)
-    async def whois(self, ctx: commands.Context, *name) -> None:
-        print('whois')
-        name = ' '.join(name)
-        if not await self.bot.warn_meta_channel(ctx): return
-        if not name:
-            await ctx.send("whois whomst?")
+    async def whoisin(self, ctx: typing.Union[commands.Context, SlashContext], role: discord.Role = None) -> None:
+        print('whoisin')
+        if not role:
+            await ctx.send("whomst wheremst?")
             return
 
-        member = helper.lookup_member(ctx.guild.members, name)
+        if role.name == 'active':
+            await ctx.send('algorithmically determined active users')
+            return
+        if not role.members:
+            await ctx.send('nobody')
+            return
+
+        names = list(map(lambda member: re.sub(r'([`|])', r'\\\1', member.display_name), role.members))
+        await ctx.send(', '.join(names))
+
+    async def whois(self, ctx: typing.Union[commands.Context, SlashContext], member: discord.Member = None) -> None:
+        print('whois')
         if not member:
-            await ctx.send("nobody")
+            await ctx.send("whomst whomst?")
             return
 
         embed = discord.Embed(title=helper.distinct(member)) \
@@ -54,60 +110,24 @@ class RolerCog(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(hidden=True)
-    async def whoisin(self, ctx: commands.Context, *name) -> None:
-        print('whoisin')
-        if not await self.bot.warn_meta_channel(ctx): return
-        name = ' '.join(name)
-        if not name:
-            await ctx.send("whoisin wheremst?")
-            return
-
-        role = helper.lookup_role(ctx.guild.roles, name)
-        if not role:
-            await ctx.send("#{name} does not exist")
-            return
-        if role.name == 'active':
-            await ctx.send('algorithmically determined active users')
-            return
-        if not role.members:
-            await ctx.send('nobody')
-            return
-        names = list(map(lambda member: re.sub(r'([`|])', r'\\\1', member.display_name), role.members))
-        await ctx.send(', '.join(names))
-
-    @commands.command()
-    async def roles(self, ctx: commands.Context) -> None:
+    async def roles(self, ctx: typing.Union[commands.Context, SlashContext]) -> None:
         await Roler(ctx).list_roles()
 
-    @commands.command()
-    async def addroles(self, ctx: commands.Context, *roles: str) -> None:
-        print(f'addroles {roles}')
-        if not await self.bot.warn_meta_channel(ctx): return
-        cmds = ['fakegeekgirls', 'bayareameetup', 'doge']
-        for cmd in list(set(roles) & set(cmds)):
-            print(cmd)
-            await ctx.invoke(self.bot.get_command(cmd))
+    async def addroles(self, ctx: typing.Union[commands.Context, SlashContext], roles: str) -> None:
+        await Roler(ctx).add_roles(roles)
 
-        await Roler(ctx).add_roles((set(roles) - set(cmds)))
+    async def addrole(self, ctx: typing.Union[commands.Context, SlashContext], role: discord.abc.Role) -> None:
+        await self.addroles(ctx, role.name)
 
-    @commands.command(hidden=True)
-    async def addrole(self, ctx: commands.Context, *roles: str) -> None:
-        await ctx.invoke(self.bot.get_command('addroles'), *roles)
-
-    @commands.command()
-    async def removeroles(self, ctx: commands.Context, *roles: str) -> None:
-        print('removeroles')
-        if not await self.bot.warn_meta_channel(ctx): return
+    async def removeroles(self, ctx: typing.Union[commands.Context, SlashContext], *roles: str) -> None:
         await Roler(ctx).remove_roles(roles)
 
-    @commands.command(hidden=True)
-    async def removerole(self, ctx: commands.Context, *roles: str) -> None:
-        await ctx.invoke(self.bot.get_command('removeroles'), *roles)
+    async def removerole(self, ctx: typing.Union[commands.Context, SlashContext], role: discord.abc.Role) -> None:
+        await self.removeroles(ctx, role.name)
 
 
 class Roler():
-    def __init__(self, ctx: commands.Context):
+    def __init__(self, ctx: typing.Union[commands.Context, SlashContext]):
         self.ctx = ctx
 
     async def list_roles(self) -> None:
@@ -118,7 +138,7 @@ class Roler():
         for key, roles in config_roles.items():
             await self.ctx.send(f"{key}: {', '.join(roles)}")
 
-    async def add_roles(self, roles: list) -> None:
+    async def add_roles(self, roles: str) -> None:
         if not self.check_user_approved: return
         if not self.check_config_roles_defined: return
 
@@ -139,7 +159,7 @@ class Roler():
         if invalid:
             await self.ctx.send(f"not adding to {', '.join(invalid)}")
 
-    async def remove_roles(self, roles: list) -> None:
+    async def remove_roles(self, roles: str) -> None:
         if not self.check_user_approved: return
         if not self.check_config_roles_defined: return
 
@@ -161,7 +181,7 @@ class Roler():
             await self.ctx.send(f"not removing from {', '.join(invalid)}")
 
     def check_user_approved(self) -> bool:
-        return self.ctx.bot.helper.lookup_role(self.ctx.author.roles, 'approved') is not None
+        return get(self.ctx.author.roles, name='approved') is not None
 
     def check_config_roles_defined(self) -> bool:
         return self.ctx.bot.config['roles'] is not None
@@ -182,10 +202,10 @@ class Roler():
         return ['mod', 'blackname', 'dad', 'fuzz', 'admin', 'bot', 'approved', 'losers', 'illuminatus', 'anime', 'weeb', 'weebs']
 
 class RolesList(UserDict):
-    def __init__(self, data):
+    def __init__(self, data: str) -> list:
+        data = data.split(' ')
         data = map(lambda role: role.split(','), data)
         data = itertools.chain.from_iterable(data)
         data = map(lambda role: re.sub(r'[\s,@]', '', role), data)
         data = map(lambda role: role.lower(), data)
-        self.data = list(data)
-
+        self.data = list(filter(None, data))
