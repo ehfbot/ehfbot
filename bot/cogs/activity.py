@@ -1,5 +1,6 @@
 import re
 from datetime import datetime, timedelta
+from typing import TypedDict
 
 import discord
 from discord.ext import commands
@@ -7,6 +8,13 @@ from discord.utils import get
 from discord_slash import SlashCommand, SlashContext
 
 from .. import helper
+
+
+class UserCounts(TypedDict):
+    messages: int
+    adjusted: int
+    words: int
+    days: dict[str, bool]
 
 
 class ActivityCog(commands.Cog):
@@ -67,7 +75,7 @@ class ActivityCog(commands.Cog):
             if not member: continue
             await ctx.send(f"@{helper.distinct(member)}: {count['messages']} messages ({count['adjusted']})")
 
-    async def process_postcounts(self, guild: discord.Guild) -> set:
+    async def process_postcounts(self, guild: discord.Guild) -> dict[str, UserCounts]:
         window = datetime.now() - timedelta(days=self.bot.config['activity']['window'])
         users = {}
         print(f"processing postcounts in server {guild.name}")
