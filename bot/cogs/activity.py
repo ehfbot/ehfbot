@@ -92,7 +92,7 @@ class ActivityCog(commands.Cog):
                     count += 1
                     users.setdefault(message.author.id, {'messages': 0, 'adjusted': 0, 'words': 0, 'days': {}})
                     users[message.author.id]['messages'] += 1
-                    users[message.author.id]['words'] += len(re.split("\s+", message.content))
+                    users[message.author.id]['words'] += len(re.split(r"\s+", message.content))
                     if len(message.content) >= 10:
                         users[message.author.id]['days'][message.created_at.strftime('%Y-%m-%d')] = True
                         if last_user is not message.author.id: users[message.author.id]['adjusted'] += 1
