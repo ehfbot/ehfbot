@@ -63,6 +63,33 @@ class RolerCog(commands.Cog):
             ]
         )
 
+        self.bot.add_slash_command(
+            self.removeroles,
+            name="removeroles",
+            channels=['meta'],
+            options=[
+                create_option(
+                    name="roles",
+                    description="roles list",
+                    option_type=SlashCommandOptionType.STRING,
+                    required=False,
+                ),
+            ]
+        )
+        self.bot.add_slash_command(
+            self.removerole,
+            name="removerole",
+            channels=['meta'],
+            options=[
+                create_option(
+                    name="role",
+                    description="role name",
+                    option_type=SlashCommandOptionType.ROLE,
+                    required=True,
+                ),
+            ]
+        )
+
     async def whomst(self, ctx: typing.Union[commands.Context, SlashContext], mentionable: typing.Optional[str] = None) -> None:
         print('whomst')
         if not mentionable:
