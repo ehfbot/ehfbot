@@ -13,5 +13,5 @@ class AnnoyingCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
         if re.match(r'^[^\w]?(yo)?ur mom.*$', message.content, re.IGNORECASE): await message.delete()
-        if re.match(r'meg', message.content, re.IGNORECASE): await message.delete()
+        if re.match(r'.*meg.*', message.content, re.IGNORECASE): await message.delete()
         if re.match(r'^Lol$', message.content): await message.delete()
