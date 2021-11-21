@@ -116,6 +116,7 @@ class Bot(commands.Bot):
             cogs.LurkersCog,
             cogs.AnimeCog,
             cogs.NoveltyCog,
+            cogs.AnnoyingCog,
         ]
         for cog in initial_cogs:
             self.add_cog(cog(self))
