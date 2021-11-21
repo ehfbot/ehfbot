@@ -146,7 +146,7 @@ class RolerCog(commands.Cog):
     async def addrole(self, ctx: typing.Union[commands.Context, SlashContext], role: discord.abc.Role) -> None:
         await self.addroles(ctx, role.name)
 
-    async def removeroles(self, ctx: typing.Union[commands.Context, SlashContext], *roles: str) -> None:
+    async def removeroles(self, ctx: typing.Union[commands.Context, SlashContext], roles: str) -> None:
         await Roler(ctx).remove_roles(roles)
 
     async def removerole(self, ctx: typing.Union[commands.Context, SlashContext], role: discord.abc.Role) -> None:
