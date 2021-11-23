@@ -11,7 +11,7 @@ channels:
 time:
   zone: America/Los_Angeles
   # how long should realtalk messages last (in hours)
-  realtalk-expiry: 10
+  realtalk-expiry: 12
   # when should afterdark start (local time hour)
   afterdark-start: 21
   # when should afterdark end (local time hour)
