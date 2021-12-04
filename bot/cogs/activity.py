@@ -34,7 +34,7 @@ class ActivityCog(commands.Cog):
             await ctx.channel.send("no active role")
             return
 
-        await ctx.channel.send("tallying post counts")
+        await ctx.send("tallying post counts")
         counts = await self.process_postcounts(ctx.guild)
         count_sorted = sorted(counts.items(), key=lambda v:v[1]['adjusted'], reverse=True)
         for id, count in count_sorted:
