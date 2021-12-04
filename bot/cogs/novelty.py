@@ -24,7 +24,7 @@ class NoveltyCog(commands.Cog):
         )
 
         for name, link in bot.config.get('commands', {}).get('links', {}).items():
-            cmd = lambda link: lambda ctx: ctx.channel.send(link)
+            cmd = lambda link: lambda ctx: ctx.send(link)
             self.bot.add_slash_command(cmd(link), name=name)
 
         for name, image in bot.config.get('commands', {}).get('images', {}).items():
@@ -51,14 +51,14 @@ class NoveltyCog(commands.Cog):
     # wrapper to be able to lambda this in a one-liner
     async def _send_file_wrapper(self, ctx: SlashContext, image: str) -> None:
         with ctx.bot.storage.get(f"assets/{image}") as file:
-            await ctx.channel.send(file=discord.File(file))
+            await ctx.send(file=discord.File(file))
 
     async def buttmuscle(self, ctx: SlashContext) -> None:
         print('buttmuscle')
         path = "assets/buttmusclespicy.jpg" if ctx.channel.name == 'afterdark' else "assets/buttmuscle.jpg"
         with ctx.bot.storage.get(path) as file:
-            await ctx.channel.send(file=discord.File(file))
-        await ctx.channel.send(content='http://buttmuscle.eu/')
+            await ctx.send(file=discord.File(file))
+        await ctx.send(content='http://buttmuscle.eu/')
 
     async def katon(self, ctx: SlashContext) -> None:
         print('katon')
@@ -70,4 +70,4 @@ class NoveltyCog(commands.Cog):
         else:
             path = "assets/katon.png"
         with ctx.bot.storage.get(path) as file:
-            await ctx.channel.send(file=discord.File(file))
+            await ctx.send(file=discord.File(file))

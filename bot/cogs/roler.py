@@ -93,7 +93,7 @@ class RolerCog(commands.Cog):
     async def whomst(self, ctx: typing.Union[commands.Context, SlashContext], mentionable: typing.Optional[str] = None) -> None:
         print('whomst')
         if not mentionable:
-            await ctx.channel.send("whomst is whomst?")
+            await ctx.send("whomst is whomst?")
             return
 
         role = get(ctx.guild.roles, id=int(mentionable))
@@ -105,28 +105,28 @@ class RolerCog(commands.Cog):
             await self.whois(ctx, member=member)
 
         if not role and not member:
-            await ctx.channel.send('nobody')
+            await ctx.send('nobody')
 
     async def whoisin(self, ctx: typing.Union[commands.Context, SlashContext], role: discord.Role = None) -> None:
         print('whoisin')
         if not role:
-            await ctx.channel.send("whomst wheremst?")
+            await ctx.send("whomst wheremst?")
             return
 
         if role.name == 'active':
-            await ctx.channel.send('algorithmically determined active users')
+            await ctx.send('algorithmically determined active users')
             return
         if not role.members:
-            await ctx.channel.send('nobody')
+            await ctx.send('nobody')
             return
 
         names = list(map(lambda member: re.sub(r'([`|])', r'\\\1', member.display_name), role.members))
-        await ctx.channel.send(', '.join(names))
+        await ctx.send(', '.join(names))
 
     async def whois(self, ctx: typing.Union[commands.Context, SlashContext], member: discord.Member = None) -> None:
         print('whois')
         if not member:
-            await ctx.channel.send("whomst whomst?")
+            await ctx.send("whomst whomst?")
             return
 
         embed = discord.Embed(title=helper.distinct(member)) \
@@ -135,7 +135,7 @@ class RolerCog(commands.Cog):
             .add_field(name='joined', value=member.joined_at.strftime('%Y-%m-%d')) \
             .add_field(name='roles', inline=False, value=' '.join(map(lambda role: role.name, member.roles)))
 
-        await ctx.channel.send(embed=embed)
+        await ctx.send(embed=embed)
 
     async def roles(self, ctx: typing.Union[commands.Context, SlashContext]) -> None:
         await Roler(ctx).list_roles()
@@ -160,10 +160,10 @@ class Roler():
     async def list_roles(self) -> None:
         config_roles = self.config_roles()
         if not config_roles:
-            await self.ctx.channel.send('no roles defined')
+            await self.ctx.send('no roles defined')
             return
         for key, roles in config_roles.items():
-            await self.ctx.channel.send(f"{key}: {', '.join(roles)}")
+            await self.ctx.send(f"{key}: {', '.join(roles)}")
 
     async def add_roles(self, roles: str) -> None:
         if not self.check_user_approved: return
@@ -175,16 +175,16 @@ class Roler():
         invalid = set(roles) - set(flat_config_roles)
 
         if not self.check_bannable(invalid):
-            await self.ctx.channel.send(f"you have been banned")
+            await self.ctx.send(f"you have been banned")
             return
 
         if valid:
-            await self.ctx.channel.send(f"adding to {', '.join(valid)}")
+            await self.ctx.send(f"adding to {', '.join(valid)}")
             svalid = helper.lookup_roles(self.ctx.guild.roles, valid)
             print(f"svalid: {svalid}")
             if svalid: await self.ctx.author.add_roles(*svalid)
         if invalid:
-            await self.ctx.channel.send(f"not adding to {', '.join(invalid)}")
+            await self.ctx.send(f"not adding to {', '.join(invalid)}")
 
     async def remove_roles(self, roles: str) -> None:
         if not self.check_user_approved: return
@@ -196,16 +196,16 @@ class Roler():
         invalid = set(roles) - set(flat_config_roles)
 
         if not self.check_bannable(invalid):
-            await self.ctx.channel.send(f"you have been banned")
+            await self.ctx.send(f"you have been banned")
             return
 
         if valid:
-            await self.ctx.channel.send(f"removing from {', '.join(valid)}")
+            await self.ctx.send(f"removing from {', '.join(valid)}")
             svalid = helper.lookup_roles(self.ctx.guild.roles, valid)
             print(f"svalid: {svalid}")
             if svalid: await self.ctx.author.remove_roles(*svalid)
         if invalid:
-            await self.ctx.channel.send(f"not removing from {', '.join(invalid)}")
+            await self.ctx.send(f"not removing from {', '.join(invalid)}")
 
     def check_user_approved(self) -> bool:
         return get(self.ctx.author.roles, name='approved') is not None
