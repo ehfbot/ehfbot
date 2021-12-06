@@ -1,9 +1,23 @@
 aiohttp==3.7.4.post0
+async-timeout==3.0.1
+attrs==21.2.0
 boto3==1.17.62
-git+git://github.com/Rapptz/discord.py@746da7d54cc2bbcc4ba0f854257b647e88d77898#discord.py==2.0.0a0
-# discord.py==1.7.3
-git+git://github.com/discord-py-interactions/discord-py-interactions/@5ddbd4f303e14787e16a2c906bccd1a4e828ef6c#discord-py-slash-command==2.4.2a
-# discord-py-slash-command==2.4.1
+botocore==1.20.112
+chardet==4.0.0
+discord-py-slash-command @ git+git://github.com/discord-py-interactions/discord-py-interactions/@5ddbd4f303e14787e16a2c906bccd1a4e828ef6c
+discord.py==2.0.0a3245+g746da7d5
+idna==3.3
+isort==5.10.1
+jmespath==0.10.0
+multidict==5.2.0
+pony==0.7.14
+psycopg2==2.9.2
+python-dateutil==2.8.2
 python-dotenv==0.17.0
 pytz==2019.3
 PyYAML==5.4.1
+s3transfer==0.4.2
+six==1.16.0
+typing_extensions==4.0.1
+urllib3==1.26.7
+yarl==1.7.2

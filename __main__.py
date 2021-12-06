@@ -1,9 +1,5 @@
 from bot import Bot
 
-
-def main():
+if __name__ == '__main__':
     bot = Bot.create()
     bot.run()
-
-if __name__ == '__main__':
-    main()

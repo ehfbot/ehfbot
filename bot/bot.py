@@ -1,92 +1,29 @@
-import asyncio
-import logging
-import os
-import re
-import sys
-import tempfile
 import typing
-from collections import UserDict
-from contextlib import contextmanager
 
-import boto3
 import discord
 import discord_slash
-import yaml
 from discord.ext import commands, tasks
 from discord_slash import SlashCommand, SlashContext
-from dotenv import dotenv_values
 
-from bot import cogs, helper
+from bot import cogs, entities, helper
+from bot.config import config
+from bot.db import db
+from bot.env import env
+from bot.storage import storage
 
-
-class Env(UserDict):
-    REQUIRED_KEYS = ('DISCORD_TOKEN', 'S3_REGION', 'S3_BUCKET', 'AWS_KEY', 'AWS_SECRET', 'GUILD_IDS')
-
-    def __init__(self):
-        self.data = dotenv_values(".env") # only used in development
-        for key in self.REQUIRED_KEYS:
-            value = os.getenv(key) # used in heroku/production
-            if value:
-                self.data[key] = value
-
-        self.warn_about_missing_keys()
-
-    def warn_about_missing_keys(self):
-        if set(self.REQUIRED_KEYS) - set(self.data):
-            sys.exit(f"{self.REQUIRED_KEYS} must be set in environment")
-
-class Storage(object):
-    def __init__(self, env):
-        self.session = boto3.resource(
-            service_name='s3',
-            region_name=env['S3_REGION'],
-            aws_access_key_id=env['AWS_KEY'],
-            aws_secret_access_key=env['AWS_SECRET']
-        )
-        self.bucket = self.session.Bucket(env['S3_BUCKET'])
-
-    @contextmanager
-    def get(self, path):
-        filename, file_extension = os.path.splitext(path)
-        temporary_file = tempfile.NamedTemporaryFile(suffix=file_extension)
-        self.bucket.download_file(path, temporary_file.name)
-        with open(temporary_file.name, 'rb') as file:
-            try:
-                yield file
-            finally:
-                temporary_file.close()
-
-class Config(UserDict):
-    def __init__(self, env):
-        self.data = self.load_config()
-        self.data.update(self.load_env(env))
-
-    def load_config(self):
-        data = {}
-        with open('config/app.yml', 'r') as file:
-            data = yaml.load(file.read(), Loader=yaml.FullLoader)
-        return data
-
-    def load_env(self, env):
-        return ({
-            'discord': {
-                'token': env['DISCORD_TOKEN'],
-            },
-        })
 
 class Bot(commands.Bot):
     @classmethod
     def create(cls):
-        env = Env()
-        storage = Storage(env=env)
-        config = Config(env=env)
-        bot = Bot(env=env, storage=storage, config=config)
+        bot = Bot(env=env, storage=storage, config=config, db=db)
+        # bot = Bot(env=env.env, storage=storage.storage, config=config.config, db=db.db)
         return bot
 
-    def __init__(self, env, storage, config):
+    def __init__(self, env, storage, config, db):
         self.env = env
         self.storage = storage
         self.config = config
+        self.db = db
         intents = discord.Intents.default()
         intents.members = True
 
@@ -108,6 +45,7 @@ class Bot(commands.Bot):
 
         initial_cogs = [
             cogs.PresenceCog,
+            cogs.PostingCog,
             cogs.WelcomeCog,
             cogs.RolerCog,
             cogs.AfterdarkCog,
@@ -120,6 +58,9 @@ class Bot(commands.Bot):
         ]
         for cog in initial_cogs:
             self.add_cog(cog(self))
+
+        # set the db up
+        self.db.generate_mapping(create_tables=False)
 
         self.heartbeat_loop.start()
 

@@ -4,6 +4,7 @@ from bot.cogs.anime import AnimeCog
 from bot.cogs.annoying import AnnoyingCog
 from bot.cogs.lurkers import LurkersCog
 from bot.cogs.novelty import NoveltyCog
+from bot.cogs.posting import PostingCog
 from bot.cogs.presence import PresenceCog
 from bot.cogs.realtalk import RealtalkCog
 from bot.cogs.roler import RolerCog
@@ -15,6 +16,7 @@ __all__ = [
   'anime',
   'lurkers',
   'novelty',
+  'posting',
   'presence',
   'realtalk',
   'roler',
