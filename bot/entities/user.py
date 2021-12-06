@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import discord
 from bot.db import db
 from discord.ext import commands
@@ -12,7 +14,7 @@ class User(db.Entity):
   id = PrimaryKey(int, auto=True)
   external_id = Required(int, unique=True)
   messages_count = Optional(int)
-  # last_posted_at = Optional()
+  last_posted_at = Optional(datetime)
 
   @classmethod
   def posted(cls, external_id = int):
