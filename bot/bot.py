@@ -135,3 +135,5 @@ class Bot(commands.Bot):
     async def ping(self, ctx: SlashContext) -> None:
         print("ping")
         await ctx.send(content='pong')
+
+bot = Bot.create()

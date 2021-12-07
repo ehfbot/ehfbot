@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 import discord
@@ -6,21 +8,37 @@ from discord.ext import commands
 from discord.utils import get
 from pony.orm import *
 
-# from pony import Optional, PrimaryKey, Required
-
 
 class User(db.Entity):
   _table_ = 'users'
   id = PrimaryKey(int, auto=True)
-  external_id = Required(int, unique=True)
+  external_id = Required(int, unique=True, size=64)
   messages_count = Optional(int)
   last_posted_at = Optional(datetime)
 
   @classmethod
-  def posted(cls, external_id = int):
-    user = cls.upsert(external_id = external_id)
-    if user.messages_count is None:
-      user.messages_count = 0
+  @db_session
+  def upsert(cls, *attrs) -> User:
+    user = cls.get(*attrs)
+
+    if user is None:
+      user = cls(*attrs)
+
+    db.commit()
+
+    return user
+
+  @classmethod
+  @db_session
+  def posted(cls, message = discord.Message):
+    user = cls.upsert(external_id = message.author.id)
+
+    if user is None:
+      raise
+
+    user.last_posted_at = datetime.now()
     user.messages_count += 1
-    user.save()
-    next
+
+    db.commit()
+
+    return None
