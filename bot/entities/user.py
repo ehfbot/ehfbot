@@ -36,6 +36,9 @@ class User(db.Entity):
     if user is None:
       raise
 
+    if user.messages_count is None:
+      user.messages_count = 0
+
     user.last_posted_at = datetime.now()
     user.messages_count += 1
 
