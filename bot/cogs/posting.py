@@ -16,7 +16,7 @@ class PostingCog(commands.Cog):
       external_id = message.author.id
       last_posted_at = self.user_posting_times.get(external_id)
 
-      if last_posted_at is None or time.time() - last_posted_at > 30: # 30 second cooldown
+      if last_posted_at is None or time.time() - last_posted_at > 30: # cooldown in seconds
         User.posted(message = message)
         self.user_posting_times[external_id] = time.time()
 
