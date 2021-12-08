@@ -1,3 +1,5 @@
+import time
+
 import discord
 from bot.entities import User
 from discord.ext import commands
@@ -13,7 +15,9 @@ class PostingCog(commands.Cog):
     async def on_message(self, message: discord.Message) -> None:
       external_id = message.author.id
       last_posted_at = self.user_posting_times.get(external_id)
-      if last_posted_at is None or last_posted_at < 30: # second cooldown
+
+      if last_posted_at is None or time.time() - last_posted_at > 30: # 30 second cooldown
         User.posted(message = message)
+        self.user_posting_times[external_id] = time.time()
 
       return None
