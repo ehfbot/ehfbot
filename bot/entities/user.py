@@ -18,8 +18,8 @@ class User(db.Entity):
 
   @classmethod
   @db_session
-  def upsert(cls, *attrs) -> User:
-    user = cls.get(*attrs)
+  def upsert(cls, **attrs) -> User:
+    user = cls.get(**attrs)
 
     if user is None:
       user = cls(*attrs)
