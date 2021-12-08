@@ -22,7 +22,7 @@ class User(db.Entity):
     user = cls.get(**attrs)
 
     if user is None:
-      user = cls(*attrs)
+      user = cls(**attrs)
 
     db.commit()
 
