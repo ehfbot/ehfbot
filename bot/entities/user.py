@@ -30,7 +30,7 @@ class User(db.Entity):
 
   @classmethod
   @db_session
-  def posted(cls, message = discord.Message):
+  def posted(cls, message = discord.Message) -> None:
     user = cls.upsert(external_id = message.author.id)
 
     if user is None:
@@ -40,5 +40,3 @@ class User(db.Entity):
     user.messages_count += 1
 
     db.commit()
-
-    return None
