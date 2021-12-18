@@ -42,6 +42,7 @@ class ActivityCog(commands.Cog):
             if not member: continue
             await ctx.channel.send(f"{member.display_name}: {count['adjusted']} / {count['messages']} messages with {count['words']} words over {len(count['days'])} days")
             is_active = get(member.roles, name='active') is not None
+            is_legendary = get(member.roles, name='legendary') is not None
 
             if count['adjusted'] >= self.bot.config['activity']['messages'] and len(count['days']) >= self.bot.config['activity']['days']:
                 if is_active:
@@ -61,11 +62,15 @@ class ActivityCog(commands.Cog):
         lurkers = list(filter(lambda member: member.id not in counted_ids, ctx.guild.members))
         await ctx.channel.send(f"found {len(lurkers)} lurkers")
         for member in lurkers:
+            if is_legendary:
+                await ctx.channel.send(f"{member.display_name}: legendary lurker")
+                continue
+
             await ctx.channel.send(f"{member.display_name}: lurker")
             try:
-                await member.edit(roles=[])
+                await member.kick(message='lurker')
             except discord.errors.Forbidden:
-                print("access denied removing roles")
+                print(f"access denied kicking")
                 pass
 
         await ctx.channel.send("EHF LEADERBOARDS")
