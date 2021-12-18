@@ -37,9 +37,10 @@ class NoveltyCog(commands.Cog):
         await self._ping_images(message)
 
     async def _reaction_phrases(self, message: discord.Message) -> None:
-        if re.match(r'^(ad,?ao|anoth(a|er) ?day ?,? ?anoth(a|er) ?opp).*$', message.content.lower()):
+        if re.match(r'^(ad,?ao|anoth(a|er) ?day ?,? ?anoth(a|er)).*$', message.content, re.IGNORECASE):
             await message.add_reaction('💯')
-            return
+        if re.match(r'[.\b]*[\s\b]?meg[\s\b]?[.\b]*', message.content, re.IGNORECASE):
+            await message.add_reaction('🐸')
 
     async def _ping_images(self, message: discord.Message) -> None:
         roles_pinged = list(map(lambda role: role.name, message.role_mentions))
