@@ -21,13 +21,17 @@ class AfterdarkCog(commands.Cog):
             time = self.is_afterdark_time()
             if time and channel is None:
                 print("afterdark time and channel does not exist")
-                category = get(guild.channels, name='off topic')
-                print(f"category: {category} {type(category)}")
+                category = get(guild.channels, name='OFF TOPIC')
+                active_role = get(guild.roles, name='active')
                 await guild.create_text_channel(
                     self.bot.config['channels']['afterdark'],
                     topic='temporary spicy late night chat. will be deleted. (no porn)',
                     reason='afterdark time',
                     category=category,
+                    overwrites={
+                        guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                        active_role: discord.PermissionOverwrite(read_messages=True),
+                    },
                     nsfw=True
                 )
             elif not time and channel is not None:
