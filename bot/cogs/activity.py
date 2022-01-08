@@ -68,7 +68,7 @@ class ActivityCog(commands.Cog):
 
             await ctx.channel.send(f"{member.display_name}: lurker")
             try:
-                await member.kick(message='lurker')
+                await member.kick(reason='lurker')
             except discord.errors.Forbidden:
                 print(f"access denied kicking")
                 pass
