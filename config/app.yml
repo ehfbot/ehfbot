@@ -11,11 +11,11 @@ channels:
 time:
   zone: America/Los_Angeles
   # how long should realtalk messages last (in hours)
-  realtalk-expiry: 10
+  realtalk-expiry: 12
   # when should afterdark start (local time hour)
-  afterdark-start: 22
+  afterdark-start: 21
   # when should afterdark end (local time hour)
-  afterdark-end: 3
+  afterdark-end: 2
 
 activity:
   # how far back to consider activity (in days)
@@ -48,6 +48,9 @@ commands:
     podcast: http://wugandtras.bandcamp.com/
     sub: https://reddit.com/r/expensivehumanfashion/
     hmb: https://youtu.be/t0cXm_OYCHg
+    zongo: https://discord.gg/agJ6vUD
+    hornycontainment: https://discord.gg/9S9KjYvDYq
+    teeth: https://discord.gg/szNKqujY2g
 
   images:
     8ball: 8ball.jpg
@@ -62,7 +65,7 @@ commands:
     ohyou: ohyou.jpg
     owo: owo.png
     yuh: yuh.png
-    doge: doge-poggers.png
+    doge: doge-vroom.jpg
     gulag: gulag.jpg
     mascot: mascot.png
     mywife: mywife.jpg
@@ -73,15 +76,17 @@ commands:
     pepewrists: pepewrists.png
     christmasdoge: christmasdoge.jpg
     ohyeah: ohyeah.png
+    ohhiwow: ohhiwow.png
 
 pings:
   links:
   images:
-    '420': indica.jpg
+    '420': smoke.png
 
 roles:
   fashion:
     - bags
+    - denim
     - fashionstudent
     - fitbattle
     - furniture
@@ -131,7 +136,9 @@ roles:
     - gbs
     - guidi
     - haider
+    - helmut
     - hender
+    - hyeinseo
     - hoka
     - issey
     - julius
@@ -174,19 +181,18 @@ roles:
     - zam
 
   food:
+    - boba
     - brew
     - coffee
+    - egg
     - spicy
 
   gaming:
     - animalcrossing
-    - csgo
     - dnd
     - jackbox
     - league
     - minecraft
-    - overwatch
-    - pubg
     - smash
 
   pronoun:
@@ -218,10 +224,12 @@ roles:
     - bald
     - cartalk
     - guitar
+    - ibs
     - keyboards
     - movies
     - mullet
     - pens
+    - rave
     - skate
     - soccer
     - synth

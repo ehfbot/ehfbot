@@ -1,5 +1,6 @@
 .env
 .venv
+.vscode
 tmp
 bin
 assets
