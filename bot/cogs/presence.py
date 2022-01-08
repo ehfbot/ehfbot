@@ -11,5 +11,5 @@ class PresenceCog(commands.Cog):
         await self.process_presence()
 
     async def process_presence(self) -> None:
-        game = discord.Game(f"{self.bot.command_prefix}help for commands")
+        game = discord.Game(f"take it to #{self.bot.config['channels']['meta']}")
         await self.bot.change_presence(status=discord.Status.online, activity=game)
