@@ -26,8 +26,12 @@ class WelcomeCog(commands.Cog):
         approved_role = get(guild.roles, name='approved')
         timeout_role = get(guild.roles, name='timeout')
         if approved_role not in before.roles and approved_role in after.roles and timeout_role not in after.roles:
-            print("approved a new user")
-            await member.send(self.bot.config['commands']['welcome-pm'])
+            print(f"approved a new user {member.display_name}")
+            try:
+                await member.send(self.bot.config['commands']['welcome-pm'])
+            except discord.errors.Forbidden:
+                print(f"error sending welcome message")
+                pass
             await self._welcome_user(guild, member)
 
 
