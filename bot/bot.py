@@ -124,11 +124,11 @@ class Bot(commands.Bot):
     async def on_slash_command_error(self, ctx, ex):
         print('on_slash_command_error')
         if isinstance(ex, discord.ext.commands.errors.MissingAnyRole):
-            await ctx.channel.send("Permission check failed", hidden=True)
+            await ctx.channel.send("Permission check failed")
         elif isinstance(ex, discord_slash.error.CheckFailure):
-            await ctx.channel.send("Channel check failed", hidden=True)
+            await ctx.channel.send("Channel check failed")
         else:
-            await ctx.channel.send('Oopsie woopsie', hidden=True)
+            await ctx.channel.send('Oopsie woopsie')
             print(ex)
             # raise ex
 
