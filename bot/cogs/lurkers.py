@@ -34,8 +34,9 @@ class LurkersCog(commands.Cog):
         print(f"found {len(users)} lurkers")
         await ctx.send(f"found {len(users)} lurkers")
         for user in users:
-            print(f"kicking {user.display_name}")
-            await ctx.guild.kick(user=user, reason="lurker")
+            print(f"kicking lurker {user.display_name}")
+            await ctx.send(f"would be kicking lurker {user.display_name}")
+            # await ctx.guild.kick(user=user, reason="lurker")
         await ctx.send(f"done")
 
     def lurker_detector(self, member):
