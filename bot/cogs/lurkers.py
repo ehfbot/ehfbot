@@ -32,11 +32,11 @@ class LurkersCog(commands.Cog):
         print(f"purging lurkers in server {ctx.guild.name}")
         users = list(filter(lambda member: self.lurker_detector(member), ctx.guild.members))
         print(f"found {len(users)} lurkers")
-        await ctx.send(f"found {len(users)} lurkers")
+        await ctx.send(f"purging {len(users)} lurkers")
         for user in users:
             print(f"kicking lurker {user.display_name}")
-            await ctx.send(f"would be kicking lurker {user.display_name}")
-            # await ctx.guild.kick(user=user, reason="lurker")
+            await ctx.send(f"kicking lurker {user.display_name}")
+            await ctx.guild.kick(user=user, reason="lurker")
         await ctx.send(f"done")
 
     def lurker_detector(self, member):
