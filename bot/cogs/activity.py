@@ -70,7 +70,7 @@ class ActivityCog(commands.Cog):
             try:
                 await member.remove_roles(approved_role)
             except discord.errors.Forbidden:
-                print(f"access removing approved")
+                print(f"error removing approved")
                 pass
 
         await ctx.channel.send("EHF LEADERBOARDS")
