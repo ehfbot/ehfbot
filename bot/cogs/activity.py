@@ -1,5 +1,6 @@
 import re
 from datetime import datetime, timedelta
+from multiprocessing.dummy import Array
 from typing import TypedDict
 
 import discord
@@ -84,12 +85,9 @@ class ActivityCog(commands.Cog):
         window = datetime.now() - timedelta(days=self.bot.config['activity']['window'])
         users = {}
         print(f"processing postcounts in server {guild.name}")
-        for channel in guild.channels:
-            if type(channel) != discord.TextChannel: continue
-            if channel.name == self.bot.config['channels']['realtalk']: continue
-            if channel.name == self.bot.config['channels']['bot']: continue
+
+        for channel in self.get_channels(guild=guild):
             print(f"processing postcounts in channel #{channel.name}")
-            last_id = None
             last_user = None
             count = 0
             try:
@@ -107,3 +105,23 @@ class ActivityCog(commands.Cog):
                 pass
             print(f"got {count} messages")
         return users
+
+
+    async def get_channels(self, guild: discord.Guild) -> list[discord.Channel]:
+        channels = []
+
+        for channel in guild.channels:
+            if type(channel) != discord.TextChannel: continue
+            if channel.name == self.bot.config['channels']['realtalk']: continue
+            if channel.name == self.bot.config['channels']['bot']: continue
+
+            channels.append(channel)
+
+            threads = channel.threads
+            if threads is None: continue
+
+            for thread in threads:
+                channels.append(thread)
+
+        return channels
+
