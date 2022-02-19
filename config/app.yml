@@ -65,7 +65,7 @@ commands:
     ohyou: ohyou.jpg
     owo: owo.png
     yuh: yuh.png
-    doge: doge-vroom.jpg
+    doge: doge-a-boy.jpg
     gulag: gulag.jpg
     mascot: mascot.png
     mywife: mywife.jpg
@@ -81,7 +81,7 @@ commands:
 pings:
   links:
   images:
-    '420': smoke.png
+    '420': smokey.gif
 
 roles:
   fashion:
