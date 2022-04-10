@@ -2,7 +2,7 @@ aiohttp==3.7.4.post0
 boto3==1.17.62
 botocore==1.20.112
 discord==1.0.1
-discord-py-interactions==4.1.0
+discord-py-slash-command @ git+git://github.com/discord-py-interactions/discord-py-interactions/@5ddbd4f303e14787e16a2c906bccd1a4e828ef6c
 #discord-py-slash-command @ git+git://github.com/discord-py-interactions/discord-py-interactions/@18868bf3530359a8e4dd2da28aca9dc4183515f5
 #discord.py==2.0.0a3245+g746da7d5
 discord.py @ git+https://github.com/Rapptz/discord.py@746da7d54cc2bbcc4ba0f854257b647e88d77898#discord.py==2.0.0a0
