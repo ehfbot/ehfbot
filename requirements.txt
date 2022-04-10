@@ -11,7 +11,6 @@ pony==0.7.14
 python-dateutil==2.8.2
 python-dotenv==0.17.0
 pytz==2019.3
-pywin32==302
 PyYAML==5.4.1
 s3transfer==0.4.2
 six==1.16.0
