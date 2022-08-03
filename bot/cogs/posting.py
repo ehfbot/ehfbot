@@ -6,6 +6,7 @@ from discord.ext import commands
 from discord.utils import get
 
 
+# this costs a lot of money in database fees so it is disabled for now
 class PostingCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot

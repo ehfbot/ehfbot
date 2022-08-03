@@ -45,7 +45,7 @@ class Bot(commands.Bot):
 
         initial_cogs = [
             cogs.PresenceCog,
-            cogs.PostingCog,
+            # cogs.PostingCog,
             cogs.WelcomeCog,
             cogs.RolerCog,
             cogs.AfterdarkCog,
