@@ -15,17 +15,15 @@ class AfterdarkCog(commands.Cog):
         await self.process_afterdark()
 
     async def process_afterdark(self) -> None:
-        #print("process_afterdark")
         for guild in self.bot.guilds:
             channel = get(guild.channels, name=self.bot.config['channels']['afterdark'])
-            time = self.is_afterdark_time()
-            if time and channel is None:
-                print("afterdark time and channel does not exist")
+            if channel is None:
+                print("afterdark channel does not exist")
                 category = get(guild.channels, name='OFF TOPIC')
                 active_role = get(guild.roles, name='active')
                 await guild.create_text_channel(
                     self.bot.config['channels']['afterdark'],
-                    topic='temporary spicy late night chat. will be deleted. (no porn)',
+                    topic='temporary spicy late night chat (no porn)',
                     reason='afterdark time',
                     category=category,
                     overwrites={
@@ -34,14 +32,18 @@ class AfterdarkCog(commands.Cog):
                     },
                     nsfw=True
                 )
-            elif not time and channel is not None:
-                print("past afterdark time and channel does exist")
-                await channel.delete(reason='after afterdark')
 
+            overwrite = channel.overwrites_for(guild.default_role)
+            time = self.is_afterdark_time()
+            if overwrite.view_channel == False and time:
+                print("afterdark time and channel is not visible")
+                await channel.set_permissions(guild.default_role, view_channel=True)
+            elif overwrite.view_channel == False and not time:
+                print("past afterdark time and channel is visible")
+                await channel.set_permissions(guild.default_role, view_channel=False)
 
     def is_afterdark_time(self) -> bool:
         zone = self.bot.config['time']['zone']
         tz = pytz.timezone(zone)
         hour = datetime.now(tz).hour
-        #print(f"the hour is {hour}")
         return hour >= self.bot.config['time']['afterdark-start'] or hour <= self.bot.config['time']['afterdark-end']
