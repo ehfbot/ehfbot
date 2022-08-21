@@ -17,8 +17,9 @@ class AfterdarkCog(commands.Cog):
     async def process_afterdark(self) -> None:
         for guild in self.bot.guilds:
             channel = get(guild.channels, name=self.bot.config['channels']['afterdark'])
-            if channel is None:
-                print("afterdark channel does not exist")
+            time = self.is_afterdark_time()
+            if time and channel is None:
+                print("afterdark time and channel does not exist")
                 category = get(guild.channels, name='OFF TOPIC')
                 active_role = get(guild.roles, name='active')
                 bot_role = get(guild.roles, name='robot overlord')
@@ -34,16 +35,10 @@ class AfterdarkCog(commands.Cog):
                     },
                     nsfw=True
                 )
+            elif not time and channel is not None:
+                print("past afterdark time and channel does exist")
+                await channel.delete(reason='after afterdark')
 
-            time = self.is_afterdark_time()
-            active_role = get(guild.roles, name='active')
-            overwrite = channel.overwrites_for(active_role)
-            if overwrite.view_channel == False and time:
-                print("afterdark time and channel is not visible")
-                await channel.set_permissions(active_role, view_channel=True)
-            elif overwrite.view_channel == True and not time:
-                print("past afterdark time and channel is visible")
-                await channel.set_permissions(active_role, view_channel=False)
 
     def is_afterdark_time(self) -> bool:
         zone = self.bot.config['time']['zone']
