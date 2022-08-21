@@ -41,7 +41,7 @@ class AfterdarkCog(commands.Cog):
             if overwrite.view_channel == False and time:
                 print("afterdark time and channel is not visible")
                 await channel.set_permissions(active_role, view_channel=True)
-            elif overwrite.view_channel == False and not time:
+            elif overwrite.view_channel == True and not time:
                 print("past afterdark time and channel is visible")
                 await channel.set_permissions(active_role, view_channel=False)
 
