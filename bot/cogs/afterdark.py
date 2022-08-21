@@ -21,6 +21,7 @@ class AfterdarkCog(commands.Cog):
                 print("afterdark channel does not exist")
                 category = get(guild.channels, name='OFF TOPIC')
                 active_role = get(guild.roles, name='active')
+                bot_role = get(guild.roles, name='robot overlord')
                 await guild.create_text_channel(
                     self.bot.config['channels']['afterdark'],
                     topic='temporary spicy late night chat (no porn)',
@@ -29,18 +30,20 @@ class AfterdarkCog(commands.Cog):
                     overwrites={
                         guild.default_role: discord.PermissionOverwrite(read_messages=False),
                         active_role: discord.PermissionOverwrite(read_messages=True),
+                        bot_role: discord.PermissionOverwrite(read_messages=True),
                     },
                     nsfw=True
                 )
 
-            overwrite = channel.overwrites_for(guild.default_role)
             time = self.is_afterdark_time()
+            active_role = get(guild.roles, name='active')
+            overwrite = channel.overwrites_for(active_role)
             if overwrite.view_channel == False and time:
                 print("afterdark time and channel is not visible")
-                await channel.set_permissions(guild.default_role, view_channel=True)
+                await channel.set_permissions(active_role, view_channel=True)
             elif overwrite.view_channel == False and not time:
                 print("past afterdark time and channel is visible")
-                await channel.set_permissions(guild.default_role, view_channel=False)
+                await channel.set_permissions(active_role, view_channel=False)
 
     def is_afterdark_time(self) -> bool:
         zone = self.bot.config['time']['zone']
