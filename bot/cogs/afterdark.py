@@ -20,7 +20,7 @@ class AfterdarkCog(commands.Cog):
             time = self.is_afterdark_time()
             if time and channel is None:
                 print("afterdark time and channel does not exist")
-                category = get(guild.channels, name='OFF TOPIC')
+                category = get(guild.channels, name='CHAT')
                 active_role = get(guild.roles, name='active')
                 bot_role = get(guild.roles, name='robot overlord')
                 await guild.create_text_channel(
