@@ -20,8 +20,8 @@ time:
 activity:
   # how far back to consider activity (in days)
   window: 90
-  messages: 100
-  days: 10
+  messages: 45
+  days: 7
 
 commands:
   prefix: '!'
