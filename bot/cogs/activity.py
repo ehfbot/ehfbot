@@ -36,46 +36,46 @@ class ActivityCog(commands.Cog):
 
         await ctx.send("tallying post counts")
         counts = await self.process_postcounts(ctx.guild)
-        count_sorted = sorted(counts.items(), key=lambda v:v[1]['adjusted'], reverse=True)
-        for id, count in count_sorted:
-            member = ctx.guild.get_member(id)
-            if not member: continue
-            await ctx.channel.send(f"{member.display_name}: {count['adjusted']} / {count['messages']} messages with {count['words']} words over {len(count['days'])} days")
-            is_active = get(member.roles, name='active') is not None
+        # count_sorted = sorted(counts.items(), key=lambda v:v[1]['adjusted'], reverse=True)
+        # for id, count in count_sorted:
+        #     member = ctx.guild.get_member(id)
+        #     if not member: continue
+        #     await ctx.channel.send(f"{member.display_name}: {count['adjusted']} / {count['messages']} messages with {count['words']} words over {len(count['days'])} days")
+        #     is_active = get(member.roles, name='active') is not None
 
-            if count['adjusted'] >= self.bot.config['activity']['messages'] and len(count['days']) >= self.bot.config['activity']['days']:
-                if is_active:
-                    await ctx.channel.send("already in active")
-                    continue
-                await ctx.channel.send("adding to active")
-                await member.add_roles(role)
-            else:
-                if not is_active:
-                    await ctx.channel.send("not in active")
-                    continue
-                await ctx.channel.send("removing from active")
-                await member.remove_roles(role)
+        #     if count['adjusted'] >= self.bot.config['activity']['messages'] and len(count['days']) >= self.bot.config['activity']['days']:
+        #         if is_active:
+        #             await ctx.channel.send("already in active")
+        #             continue
+        #         await ctx.channel.send("adding to active")
+        #         await member.add_roles(role)
+        #     else:
+        #         if not is_active:
+        #             await ctx.channel.send("not in active")
+        #             continue
+        #         await ctx.channel.send("removing from active")
+        #         await member.remove_roles(role)
 
         # remove rest of inactive lurkers not in count list from approved
-        approved_role = role = get(ctx.guild.roles, name='approved')
-        counted_ids = counts.keys()
-        lurkers = list(filter(lambda member: member.id not in counted_ids, ctx.guild.members))
-        await ctx.channel.send(f"found {len(lurkers)} lurkers")
-        for member in lurkers:
-            if get(member.roles, name='legendary') is not None:
-                await ctx.channel.send(f"{member.display_name}: legendary lurker")
-                continue
+        # approved_role = role = get(ctx.guild.roles, name='approved')
+        # counted_ids = counts.keys()
+        # lurkers = list(filter(lambda member: member.id not in counted_ids, ctx.guild.members))
+        # await ctx.channel.send(f"found {len(lurkers)} lurkers")
+        # for member in lurkers:
+        #     if get(member.roles, name='legendary') is not None:
+        #         await ctx.channel.send(f"{member.display_name}: legendary lurker")
+        #         continue
 
-            await ctx.channel.send(f"{member.display_name}: lurker")
-            try:
-                await member.remove_roles(approved_role)
-            except discord.errors.Forbidden:
-                print(f"error removing approved")
-                pass
+        #     await ctx.channel.send(f"{member.display_name}: lurker")
+        #     try:
+        #         await member.remove_roles(approved_role)
+        #     except discord.errors.Forbidden:
+        #         print(f"error removing approved")
+        #         pass
 
         await ctx.channel.send("EHF LEADERBOARDS")
         count_sorted = sorted(counts.items(), key=lambda v:v[1]['messages'], reverse=True)
-        for id, count in count_sorted[0:10]:
+        for id, count in count_sorted[0:25]:
             member = ctx.guild.get_member(id)
             if not member: continue
             await ctx.channel.send(f"@{helper.distinct(member)}: {count['messages']} messages ({count['adjusted']})")
@@ -89,7 +89,6 @@ class ActivityCog(commands.Cog):
             if channel.name == self.bot.config['channels']['realtalk']: continue
             if channel.name == self.bot.config['channels']['bot']: continue
             print(f"processing postcounts in channel #{channel.name}")
-            last_id = None
             last_user = None
             count = 0
             try:
