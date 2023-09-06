@@ -5,7 +5,7 @@ import discord_slash
 from discord.ext import commands, tasks
 from discord_slash import SlashCommand, SlashContext
 
-from bot import cogs, entities, helper
+from bot import cogs, helper
 from bot.config import config
 from bot.env import env
 from bot.storage import storage
