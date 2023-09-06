@@ -7,7 +7,6 @@ from discord_slash import SlashCommand, SlashContext
 
 from bot import cogs, entities, helper
 from bot.config import config
-from bot.db import db
 from bot.env import env
 from bot.storage import storage
 
@@ -15,15 +14,13 @@ from bot.storage import storage
 class Bot(commands.Bot):
     @classmethod
     def create(cls):
-        bot = Bot(env=env, storage=storage, config=config, db=db)
-        # bot = Bot(env=env.env, storage=storage.storage, config=config.config, db=db.db)
+        bot = Bot(env=env, storage=storage, config=config)
         return bot
 
-    def __init__(self, env, storage, config, db):
+    def __init__(self, env, storage, config):
         self.env = env
         self.storage = storage
         self.config = config
-        self.db = db
         intents = discord.Intents.default()
         intents.members = True
 
@@ -58,9 +55,6 @@ class Bot(commands.Bot):
         ]
         for cog in initial_cogs:
             self.add_cog(cog(self))
-
-        # set the db up
-        self.db.generate_mapping(create_tables=False)
 
         self.heartbeat_loop.start()
 
